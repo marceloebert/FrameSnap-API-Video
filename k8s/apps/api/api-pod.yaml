@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api-pod
+  labels:
+    app: api-pod
+spec:
+  containers:
+    - name: api-pod-config
+      image: 183295443301.dkr.ecr.us-east-1.amazonaws.com/fiap-software-architecture-fastfood-app
+      ports:
+        - containerPort: 3000
+      env:
+        - name: SPRING_DATASOURCE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: MYSQL_URL
+
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: MYSQL_USERNAME
+
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: MYSQL_PASSWORD
+
+        - name: SPRING_DATASOURCE_DRIVER-CLASS-NAME
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+
+        - name: SPRING_JPA_HIBERNATE_DDL-AUTO
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: SPRING_JPA_HIBERNATE_DDL_AUTO
+
+        - name: SPRING_JPA_DATABASE-PLATFORM
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: SPRING_JPA_DATABASE_PLATFORM
