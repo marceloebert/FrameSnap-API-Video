@@ -2,7 +2,7 @@ package com.fiap.framesnap.infrastructure.video.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "sqs")
+@ConfigurationProperties(prefix = "aws.sqs")
 public class SQSProperties {
     private String queueUrl;
 

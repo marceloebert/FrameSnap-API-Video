@@ -1,34 +1,28 @@
 package com.fiap.framesnap.infrastructure.video.controller;
 
-import com.fiap.framesnap.application.video.usecases.UploadVideoUseCase;
 import com.fiap.framesnap.application.video.usecases.DownloadVideoUseCase;
 import com.fiap.framesnap.infrastructure.video.controller.dto.*;
-import com.fiap.framesnap.infrastructure.video.controller.mapper.VideoMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
-import com.fiap.framesnap.infrastructure.video.controller.dto.UploadVideoResponse;
-import com.fiap.framesnap.entities.video.Video;
-import java.util.UUID;
+import com.fiap.framesnap.application.video.usecases.InitUploadUseCase;
 
 @RestController
 @RequestMapping("/videos")
 public class VideoApi {
 
-    private final UploadVideoUseCase uploadVideoUseCase;
     private final DownloadVideoUseCase downloadVideoUseCase;
+    private final InitUploadUseCase initUploadUseCase;
 
-    public VideoApi(UploadVideoUseCase uploadVideoUseCase, DownloadVideoUseCase downloadVideoUseCase) {
-        this.uploadVideoUseCase = uploadVideoUseCase;
+    public VideoApi(DownloadVideoUseCase downloadVideoUseCase,
+                   InitUploadUseCase initUploadUseCase) {
         this.downloadVideoUseCase = downloadVideoUseCase;
+        this.initUploadUseCase = initUploadUseCase;
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<UUID> uploadVideo(@RequestParam("file") MultipartFile file,
-                                            @RequestParam("userEmail") String userEmail) throws IOException {
-        UUID videoId = uploadVideoUseCase.execute(file.getOriginalFilename(), file.getInputStream(), userEmail);
-        return ResponseEntity.ok(videoId);
+    @PostMapping("/init-upload")
+    public ResponseEntity<InitUploadResponse> initUpload(@RequestBody InitUploadRequest request) {
+        var output = initUploadUseCase.execute(request.fileName(), request.userEmail());
+        return ResponseEntity.ok(new InitUploadResponse(output.videoId(), output.presignedUrl()));
     }
 
     @GetMapping("/download")
