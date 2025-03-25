@@ -1,6 +1,8 @@
 package com.fiap.framesnap.infrastructure.video.configuration;
 
 import com.fiap.framesnap.application.video.gateways.VideoStorageGateway;
+import com.fiap.framesnap.application.video.usecases.DownloadThumbnailsUseCase;
+import com.fiap.framesnap.application.video.gateways.VideoRepositoryGateway;
 import com.fiap.framesnap.infrastructure.video.gateway.S3VideoStorageGateway;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -68,5 +70,16 @@ public class S3Config {
     @Bean
     public VideoStorageGateway videoStorageGateway(S3Client s3Client, S3Presigner s3Presigner) {
         return new S3VideoStorageGateway(s3Client, s3Presigner, props.getBucket());
+    }
+
+    @Bean
+    public DownloadThumbnailsUseCase downloadThumbnailsUseCase(
+            VideoRepositoryGateway videoRepositoryGateway,
+            S3Client s3Client) {
+        return new DownloadThumbnailsUseCase(
+            videoRepositoryGateway,
+            s3Client,
+            props.getBucket()
+        );
     }
 }

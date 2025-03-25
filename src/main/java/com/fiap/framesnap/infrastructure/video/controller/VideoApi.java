@@ -7,9 +7,13 @@ import com.fiap.framesnap.application.video.usecases.GetVideoStatusUseCase;
 import com.fiap.framesnap.application.video.usecases.DownloadThumbnailsUseCase;
 import com.fiap.framesnap.infrastructure.video.controller.dto.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import com.fiap.framesnap.application.video.usecases.InitUploadUseCase;
 import com.fiap.framesnap.entities.video.Video;
+
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/videos")
@@ -81,7 +85,7 @@ public class VideoApi {
         ));
     }
 
-    @GetMapping("/{videoId}/thumbnails/download")
+    @GetMapping("/{videoId}/download")
     public ResponseEntity<ThumbnailDownloadResponse> downloadThumbnails(@PathVariable String videoId) {
         var result = downloadThumbnailsUseCase.execute(videoId);
         return ResponseEntity.ok(new ThumbnailDownloadResponse(
@@ -89,5 +93,20 @@ public class VideoApi {
             result.contentType(),
             result.base64Content()
         ));
+    }
+
+    @GetMapping("/{videoId}/download/file")
+    public ResponseEntity<byte[]> downloadThumbnailsAsFile(@PathVariable String videoId) {
+        var result = downloadThumbnailsUseCase.execute(videoId);
+        
+        byte[] fileContent = Base64.getDecoder().decode(result.base64Content());
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", result.fileName());
+        
+        return ResponseEntity.ok()
+            .headers(headers)
+            .body(fileContent);
     }
 }
