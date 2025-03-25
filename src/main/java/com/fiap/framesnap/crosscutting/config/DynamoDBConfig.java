@@ -20,9 +20,9 @@ public class DynamoDBConfig {
         String sessionToken = System.getenv("AWS_SESSION_TOKEN");*/
 
         String region = "us-east-1";
-        String accessKey = "ASIA2WJTGM7JSSSAWILS";
-        String secretKey = "k6EW1EsRCcCLXlrd0zBva5aRtiIkaujw2x3ggASn";
-        String sessionToken = "IQoJb3JpZ2luX2VjEJr//////////wEaCXVzLXdlc3QtMiJHMEUCIQDIA9csAVXNZV/gL+Rq/IpvngIgG3zUZGwQfDeq/wKzDgIgEFtOB9TlPRW2s4Ay7kcoyEKsa+CnP/UxD18lTHeZuFUqugII8///////////ARAAGgw3MzUwODM2NTMwNzUiDJb/j83xzKnH+l8cFCqOAvZKmRCCONqkHQ3azEl0vzDdPZOu2jG4pNl1PXJheZjBgAprshpC+O2zcz6m+PVDgIXsw5juiJhhaSySFA9lwLrgQmIHKxlaZ2NWHmCctxVUQ+EryZZ6Nu8jKaIeDr4sq1VEn0tAqiPJVjtkhuijtz/0n70XsA+pbuAZTyIktVLjPh2Kp0meYPYuL3JhDajJsG7LV82bHuJJSyIkDn9UdWWDmNdM8CteUWGQ/8ZRlPnfSzGDZkpdhB9UT2qExpXTxwxFFtiCwfAkEbs74LAMcNov4sIMO3sv2X9tWM4XmAriuVC7k9mKrElnYF8U+wfBn190mF6rF9UUpONCT2nzqMnF9wgxJ4HL2EnRpJF5ETCPqoa/BjqdAf1w7CXr2K8xsnZRyRoMk2YgwtSde92PjHAFq2vd2mA5dvlw5iuk38hofkG4GQmI1uOcDTIjZeTaA7ka89XUSnH2pRJ3gP7l2e2LdVuPSGehdEhRlsZYLdox5B7TaUzgVz5GcHMxG7narFSrbuA57oG4w2lmL4wD1kXyV1lRzL9rlgHBJdb2DGD9XxmcVWt/ft8H/u26a9XliIAPnRk=";
+        String accessKey = "ASIA2WJTGM7J7ER5GWAF";
+        String secretKey = "SlJMYTEQtVpyS4mi1bv6zJinrPMhtgBCXFH6xhQZ";
+        String sessionToken = "IQoJb3JpZ2luX2VjEKH//////////wEaCXVzLXdlc3QtMiJHMEUCIQDcv5HSRYjEXuNaAEJePhQLTqDEeeFlQ+EN7Ek94l/pRAIgD0ZqiqLdTNMha5GDeo9HfEHcYhNQ3/R2wCxEYLgDM1IqugII+v//////////ARAAGgw3MzUwODM2NTMwNzUiDBHXSp6CSJWEWsPhqCqOApKDbaT7S1dlvpqSebUMhHOT6fTZb5huHmm6lRchqpb2pJxY9cX5/4Z5GO/zRhOytQA/2x2gE8OgiLC896m3XwyEjOIIJIfDDXiNNQx7nW8QqEvxOWQiUCUXoBGnk6y/v42iiQKCme3j8ayUBh/JZ74Ak9IR4/jJZl0Kelz8yAAyrQgVLPtVgUddfa49QnMjtc9hV6rHtd50bQswWhrhJDjTui1Gfqb3B+vngPyGVoo0EXWdPZgEb46+qx5F5lByaJcBkK6AX3DaclyTpFTsPyKQMsGGfOF+1W9+P8QOCLEfzrxWnR2ZT3jPxSxcGGKMnBq7tKxuBrgJjgsP7jdab4QLDbqz5zk/K/QO+KKMyzD09oe/BjqdAUhMJL0wX2IvX6j2/S5TqZnLUOrdR7qRNe9+bxHfAdklGfwqrA0bpgBsrY/2J/pqAa1A4VuCYfpcSSaGldW3UiOZXDZ7r5/6gFD9cdz8WZt6+o2mFUJkAkCjF9k8IadGjgWcMdn1gSHv17di4JHOZ5LtxfitNSrNDF7BSzLmcplgRs9/dM0K5RIkSWFx5vgUqdok82tOG/c8mNAEtoM=";
 
         return DynamoDbClient.builder()
                 .region(Region.of(region))
