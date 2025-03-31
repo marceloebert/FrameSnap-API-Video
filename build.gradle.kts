@@ -6,32 +6,6 @@ plugins {
 	id("jacoco")
 }
 
-sonarqube {
-    properties {
-        property("sonar.projectKey", "marceloebert_FrameSnap-API-Video")
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.organization", "marceloebert")
-        property("sonar.login", System.getenv("SONAR_TOKEN") ?: "MISSING_TOKEN")
-        property("sonar.sources", listOf("src/main"))
-        property("sonar.tests", listOf("src/test"))
-        property("sonar.java.binaries", listOf("build/classes"))
-        property("sonar.coverage.jacoco.xmlReportPaths", listOf("build/reports/jacoco/test/jacocoTestReport.xml"))
-        property("sonar.coverage.exclusions", listOf(
-            "**/dto/**",
-            "**/config/**",
-            "**/util/**",
-            "**/exception/**",
-            "**/validations/**"
-        ))
-        property("sonar.sourceEncoding", "UTF-8")
-        property("sonar.java.source", "17")
-        property("sonar.java.target", "17")
-        property("sonar.gradle.skipCompile", "true")
-        property("sonar.projectName", "FrameSnap-API-Video")
-        property("sonar.projectVersion", version)
-    }
-}
-
 group = "com.fiap"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
@@ -84,9 +58,4 @@ tasks.jacocoTestReport {
 		csv.required.set(false)
 		html.required.set(true)
 	}
-}
-
-// Garante que o projeto seja compilado antes da análise do SonarQube
-tasks.named("sonarqube") {
-    dependsOn("jacocoTestReport")
 }
