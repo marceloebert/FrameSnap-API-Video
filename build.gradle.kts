@@ -27,6 +27,8 @@ sonarqube {
         property("sonar.java.source", "17")
         property("sonar.java.target", "17")
         property("sonar.gradle.skipCompile", "true")
+        property("sonar.projectName", "FrameSnap-API-Video")
+        property("sonar.projectVersion", version)
     }
 }
 
@@ -93,4 +95,9 @@ tasks.jacocoTestReport {
 		csv.required.set(false)
 		html.required.set(true)
 	}
+}
+
+// Garante que o projeto seja compilado antes da análise do SonarQube
+tasks.named("sonarqube") {
+    dependsOn("jacocoTestReport")
 }
