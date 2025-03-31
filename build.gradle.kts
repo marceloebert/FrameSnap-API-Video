@@ -58,19 +58,19 @@ tasks.jacocoTestReport {
 }
 
 sonarqube {
-    properties {
-        property("sonar.projectKey", "marceloebert_FrameSnap-API-Video")
-        property("sonar.organization", "marceloebert")
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.login", System.getenv("SONAR_TOKEN") ?: "MISSING_TOKEN")
-        property("sonar.sources", "src/main")
-        property("sonar.tests", "src/test")
-        property("sonar.java.binaries", "build/classes")
-        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
-        property("sonar.coverage.exclusions", "**/dto/**,**/config/**,**/util/**,**/exception/**,**/validations/**")
-        property("sonar.sourceEncoding", "UTF-8")
-        property("sonar.java.source", "17")
-        property("sonar.java.target", "17")
-        property("sonar.gradle.skipCompile", "true")
-    }
+	properties {
+		property("sonar.projectKey", "marceloebert_FrameSnap-API-Video")
+		property("sonar.organization", "marceloebert")
+		property("sonar.host.url", "https://sonarcloud.io")
+		property("sonar.token", System.getenv("SONAR_TOKEN") ?: "MISSING_TOKEN")
+		property("sonar.sources", "src/main")
+		property("sonar.tests", "src/test")
+		property("sonar.java.binaries", "build/classes/java/main")
+		property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
+		property("sonar.coverage.exclusions", "**/dto/**,**/config/**,**/util/**,**/exception/**,**/validations/**")
+		property("sonar.sourceEncoding", "UTF-8")
+		property("sonar.java.source", "17")
+		property("sonar.java.target", "17")
+		property("sonar.gradle.skipCompile", "true")
+	}
 }
