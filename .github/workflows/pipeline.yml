@@ -61,10 +61,13 @@ jobs:
           name: coverage-report
           path: build/reports/jacoco/test/
 
+      - name: Set JAVA_HOME corretamente para o Gradle Daemon
+        run: echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> $GITHUB_ENV
+
       - name: Run SonarQube analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar -Dsonar.projectKey=marceloebert_FrameSnap-API-Video -Dsonar.organization=marceloebert
+        run: ./gradlew sonarqube --stacktrace -Dsonar.projectKey=marceloebert_FrameSnap-API-Video -Dsonar.organization=marceloebert
 
   build:
     runs-on: ubuntu-latest
