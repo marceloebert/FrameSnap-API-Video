@@ -3,14 +3,30 @@ plugins {
 	id("org.springframework.boot") version "3.3.1"
 	id("io.spring.dependency-management") version "1.1.5"
 	id("org.sonarqube") version "4.4.1.3373"
+	id("jacoco") version "0.8.11"
 }
 
 sonarqube {
     properties {
-        property("sonar.projectKey", "marceloebert_fiap-software-architecture-fastfood")
+        property("sonar.projectKey", "marceloebert_FrameSnap-API-Video")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.organization", "marceloebert")
-        property("sonar.login", System.getenv("SONAR_TOKEN"))
+        property("sonar.login", System.getenv("SONAR_TOKEN") ?: "MISSING_TOKEN")
+        property("sonar.sources", listOf("src/main"))
+        property("sonar.tests", listOf("src/test"))
+        property("sonar.java.binaries", listOf("build/classes"))
+        property("sonar.coverage.jacoco.xmlReportPaths", listOf("build/reports/jacoco/test/jacocoTestReport.xml"))
+        property("sonar.coverage.exclusions", listOf(
+            "**/dto/**",
+            "**/config/**",
+            "**/util/**",
+            "**/exception/**",
+            "**/validations/**"
+        ))
+        property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.java.source", "17")
+        property("sonar.java.target", "17")
+        property("sonar.gradle.skipCompile", "true")
     }
 }
 
@@ -63,4 +79,18 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport)
+}
+
+jacoco {
+	toolVersion = "0.8.11"
+}
+
+tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+	reports {
+		xml.required.set(true)
+		csv.required.set(false)
+		html.required.set(true)
+	}
 }
