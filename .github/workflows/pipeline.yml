@@ -3,11 +3,11 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main # Apenas para a branch principal (produção)
+      - main
 
 env:
-  REGION_DEFAULT: us-east-1  
-  CLUSTER_NAME: EKS-fastfood
+  REGION_DEFAULT: us-east-1
+  CLUSTER_NAME: EKS-FRAMESNAP
 
 jobs:
   unit-test:
@@ -27,12 +27,19 @@ jobs:
       - name: Grant execute permission to Gradle Wrapper
         run: chmod +x ./gradlew
 
-      - name: Run Gradle Tests
-        run: ./gradlew test
+      - name: Run Gradle Tests with Coverage
+        run: ./gradlew clean test jacocoTestReport
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build/reports/jacoco/test/
 
   code-analysis:
     runs-on: ubuntu-latest
     needs: unit-test
+    environment: SONAR
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -48,17 +55,22 @@ jobs:
       - name: Grant execute permission to Gradle Wrapper
         run: chmod +x ./gradlew
 
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: build/reports/jacoco/test/
+
       - name: Run SonarQube analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar -Dsonar.projectKey=marceloebert_fiap-software-architecture-fastfood -Dsonar.organization=marceloebert
+        run: ./gradlew sonar -Dsonar.projectKey=marceloebert_FrameSnap-API-Video -Dsonar.organization=marceloebert
 
   build:
     runs-on: ubuntu-latest
     needs: [unit-test, code-analysis]
-    
-    environment: #Define a configuração de ambiente para este job
-      name: AWS    
+    environment:
+      name: AWS
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -80,13 +92,13 @@ jobs:
       - name: Build Docker image
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}          
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/fastfood-order-api:latest .      
+          docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/api-framesnap-video:latest .
 
       - name: Save Docker image as file
         run: |
-          docker save -o image.tar ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fastfood-order-api:latest
+          docker save -o image.tar ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/api-framesnap-video:latest
 
       - name: Upload Docker image artifact
         uses: actions/upload-artifact@v4
@@ -97,12 +109,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    
-    environment: #Define a configuração de ambiente para este job
-      name: AWS    
-    
-    steps: 
-
+    environment:
+      name: AWS
+    steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -123,18 +132,16 @@ jobs:
       - name: Load Docker image from file
         run: |
           docker load -i image.tar
-      
+
       - name: Push Docker image to ECR
         run: |
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fastfood-order-api:latest
-        
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/api-framesnap-video:latest
+
   update-eks:
     runs-on: ubuntu-latest
     needs: deploy
-
-    environment: #Define a configuração de ambiente para este job
-      name: AWS    
-      
+    environment:
+      name: AWS
     steps:
       - name: Configure kubectl
         uses: aws-actions/configure-aws-credentials@v1
@@ -150,7 +157,6 @@ jobs:
 
       - name: Update Kubernetes Deployment
         run: |
-          kubectl set image deployment/api-pod c-api=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/fastfood-order-api:latest
-          kubectl scale deployment api-pod --replicas=0
-          kubectl scale deployment api-pod --replicas=2           
-          
+          kubectl set image deployment/api-video-pod c-api=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/api-framesnap-video:latest
+          kubectl scale deployment api-video-pod --replicas=0
+          kubectl scale deployment api-video-pod --replicas=2

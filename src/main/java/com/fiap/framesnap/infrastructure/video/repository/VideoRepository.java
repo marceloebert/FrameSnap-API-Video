@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -16,8 +15,8 @@ public class VideoRepository implements VideoRepositoryGateway {
 
     private final DynamoDbTable<Video> videoTable;
 
-    public VideoRepository(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
-        this.videoTable = dynamoDbEnhancedClient.table("videos", TableSchema.fromBean(Video.class));
+    public VideoRepository(DynamoDbEnhancedClient dynamoDbEnhancedClient, String tableName) {
+        this.videoTable = dynamoDbEnhancedClient.table(tableName, TableSchema.fromBean(Video.class));
     }
 
     @Override

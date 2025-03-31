@@ -1,4 +1,4 @@
-package com.fiap.framesnap.crosscutting.config;
+/*package com.fiap.framesnap.crosscutting.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,10 +14,10 @@ public class DynamoDBConfig {
 
     @Bean
     public DynamoDbClient dynamoDbClient() {
-        /*String region = System.getenv("DYNAMODB_REGION");
+        String region = System.getenv("DYNAMODB_REGION");
         String accessKey = System.getenv("AWS_ACCESS_KEY_ID");
         String secretKey = System.getenv("AWS_SECRET_ACCESS_KEY");
-        String sessionToken = System.getenv("AWS_SESSION_TOKEN");*/
+        String sessionToken = System.getenv("AWS_SESSION_TOKEN");
 
         String region = "us-east-1";
         String accessKey = "ASIA2WJTGM7J7ER5GWAF";
@@ -38,4 +38,4 @@ public class DynamoDBConfig {
                 .dynamoDbClient(dynamoDbClient)
                 .build();
     }
-}
+}*/

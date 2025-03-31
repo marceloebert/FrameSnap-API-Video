@@ -1,5 +1,5 @@
 server:
-    port: 8080
+    port: 8082
 
 spring:
 
@@ -14,28 +14,6 @@ spring:
       max-file-size: 500MB
       max-request-size: 500MB
 
-    # H2 configuration
-    datasource:
-      #url: jdbc:h2:mem:lanchonetedb
-      url: ${MYSQL_URL}
-      username: ${MYSQL_USERNAME}
-      password: ${MYSQL_PASSWORD}
-      #driverClassName: org.h2.Driver
-      driverClassName: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
-   # h2:
-   #   console:
-   #     enabled: true
-   #     path: /h2-console
-    jpa:
-      hibernate:
-        ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
-        show-sql: true
-        #database-platform: org.hibernate.dialect.H2Dialect
-        database-platform: ${SPRING_JPA_DATABASE_PLATFORM}
-      properties:
-        hibernate:
-          format_sql: true
-
 management:
   endpoints:
     web:
@@ -46,32 +24,29 @@ management:
       enabled: true
 
 aws:
-  cognito:
-    client-id: "41vb4ljgmf4bhb8ogafjdjscst"
-    client-secret: "5qhg5sq91d2e68f6s3r13sht5kgar1co1lpd9b1eu01a5avdu9b"
-    user-pool-id: "us-east-1_Srf0ZBtbc"
-    region: "us-east-1"
 
   credentials:
-    access-key: "ASIA2WJTGM7J7ER5GWAF"
-    secret-key: "SlJMYTEQtVpyS4mi1bv6zJinrPMhtgBCXFH6xhQZ"
-    session-token: "IQoJb3JpZ2luX2VjEKH//////////wEaCXVzLXdlc3QtMiJHMEUCIQDcv5HSRYjEXuNaAEJePhQLTqDEeeFlQ+EN7Ek94l/pRAIgD0ZqiqLdTNMha5GDeo9HfEHcYhNQ3/R2wCxEYLgDM1IqugII+v//////////ARAAGgw3MzUwODM2NTMwNzUiDBHXSp6CSJWEWsPhqCqOApKDbaT7S1dlvpqSebUMhHOT6fTZb5huHmm6lRchqpb2pJxY9cX5/4Z5GO/zRhOytQA/2x2gE8OgiLC896m3XwyEjOIIJIfDDXiNNQx7nW8QqEvxOWQiUCUXoBGnk6y/v42iiQKCme3j8ayUBh/JZ74Ak9IR4/jJZl0Kelz8yAAyrQgVLPtVgUddfa49QnMjtc9hV6rHtd50bQswWhrhJDjTui1Gfqb3B+vngPyGVoo0EXWdPZgEb46+qx5F5lByaJcBkK6AX3DaclyTpFTsPyKQMsGGfOF+1W9+P8QOCLEfzrxWnR2ZT3jPxSxcGGKMnBq7tKxuBrgJjgsP7jdab4QLDbqz5zk/K/QO+KKMyzD09oe/BjqdAUhMJL0wX2IvX6j2/S5TqZnLUOrdR7qRNe9+bxHfAdklGfwqrA0bpgBsrY/2J/pqAa1A4VuCYfpcSSaGldW3UiOZXDZ7r5/6gFD9cdz8WZt6+o2mFUJkAkCjF9k8IadGjgWcMdn1gSHv17di4JHOZ5LtxfitNSrNDF7BSzLmcplgRs9/dM0K5RIkSWFx5vgUqdok82tOG/c8mNAEtoM="
-    region: "us-east-1"
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
+    session-token: ${AWS_SESSION_TOKEN}
+    region: ${AWS_REGION}
 
   s3:
-    endpoint: "https://s3.us-east-1.amazonaws.com"
-    bucket: "framesnap-video-bucket"
+    endpoint: ${S3_ENDPOINT}
+    bucket: ${S3_BUCKET}
 
   sqs:
-    queue-url: "https://sqs.us-east-1.amazonaws.com/735083653075/frame-snap-video-queue"
+    queue-url: ${SQS_QUEUE_URL}
+
+  dynamodb:
+    endpoint: ${DYNAMO_ENDPOINT}
+    table-name: ${DYNAMO_TABLE_NAME}
 
 redis:
-  host: "redis-19990.c61.us-east-1-3.ec2.redns.redis-cloud.com"
-  port: "19990"
-  username: "default"
-  password: "RGDMNXE1aPagkFG4fJTlpdK0VoGBXdZl"
-  #password: ${REDIS_PASSWORD} # Recomendado usar variável de ambient
-
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}
+  username: ${REDIS_USERNAME}
+  password: ${REDIS_PASSWORD}
 
 logging:
   level:
