@@ -65,7 +65,7 @@ sonarqube {
 		property("sonar.token", System.getenv("SONAR_TOKEN") ?: "MISSING_TOKEN")
 		property("sonar.sources", "src/main")
 		property("sonar.tests", "src/test")
-		property("sonar.java.binaries", "build/classes/java/main")
+		property("sonar.java.binaries", "build/classes")
 		property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
 		property("sonar.coverage.exclusions", "**/dto/**,**/config/**,**/util/**,**/exception/**,**/validations/**")
 		property("sonar.sourceEncoding", "UTF-8")
@@ -74,3 +74,4 @@ sonarqube {
 		property("sonar.gradle.skipCompile", "true")
 	}
 }
+
