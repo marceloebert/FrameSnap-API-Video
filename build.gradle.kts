@@ -2,7 +2,7 @@ plugins {
     java
     id("org.springframework.boot") version "3.2.3"
     id("io.spring.dependency-management") version "1.1.4"
-    id("org.sonarqube") version "5.0.0.4638" // atualizado
+    id("org.sonarqube") version "4.4.1.3373" // voltando para a versão que funcionou
     id("jacoco")
 }
 
@@ -58,20 +58,20 @@ tasks.jacocoTestReport {
 }
 
 sonarqube {
-	properties {
-		property("sonar.projectKey", "marceloebert_FrameSnap-API-Video")
-		property("sonar.organization", "marceloebert")
-		property("sonar.host.url", "https://sonarcloud.io")
-		property("sonar.token", System.getenv("SONAR_TOKEN") ?: "MISSING_TOKEN")
-		property("sonar.sources", "src/main")
-		property("sonar.tests", "src/test")
-		property("sonar.java.binaries", "build/classes")
-		property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
-		property("sonar.coverage.exclusions", "**/dto/**,**/config/**,**/util/**,**/exception/**,**/validations/**")
-		property("sonar.sourceEncoding", "UTF-8")
-		property("sonar.java.source", "17")
-		property("sonar.java.target", "17")
-		property("sonar.gradle.skipCompile", "true")
-	}
+    properties {
+        property("sonar.projectKey", "marceloebert_FrameSnap-API-Video")
+        property("sonar.organization", "marceloebert")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.login", System.getenv("SONAR_TOKEN") ?: "MISSING_TOKEN")
+        property("sonar.sources", listOf("src/main"))
+        property("sonar.tests", listOf("src/test"))
+        property("sonar.java.binaries", listOf("build/classes"))
+        property("sonar.coverage.jacoco.xmlReportPaths", listOf("build/reports/jacoco/test/jacocoTestReport.xml"))
+        property("sonar.coverage.exclusions", listOf("**/dto/**", "**/config/**", "**/util/**", "**/exception/**", "**/validations/**"))
+        property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.java.source", "17")
+        property("sonar.java.target", "17")
+        property("sonar.gradle.skipCompile", "true")
+    }
 }
 
