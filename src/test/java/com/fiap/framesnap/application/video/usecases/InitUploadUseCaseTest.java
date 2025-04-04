@@ -48,16 +48,6 @@ public class InitUploadUseCaseTest {
         String fileName = "test-video.mp4";
         String userEmail = "test@example.com";
         String presignedUrl = "https://example.com/presigned-url";
-        UUID videoId = UUID.randomUUID();
-
-        Video video = new Video(
-                videoId,
-                fileName,
-                userEmail,
-                VideoStatus.PENDING_UPLOAD,
-                Instant.now(),
-                presignedUrl
-        );
 
         doNothing().when(videoRepositoryGateway).save(any(Video.class));
         when(videoStorageGateway.generatePresignedUploadUrl(anyString())).thenReturn(presignedUrl);
@@ -75,8 +65,8 @@ public class InitUploadUseCaseTest {
             savedVideo.getFileName().equals(fileName) &&
             savedVideo.getUserEmail().equals(userEmail) &&
             savedVideo.getStatus() == VideoStatus.PENDING_UPLOAD &&
-            savedVideo.getThumbnailFileName() == null &&
-            savedVideo.getThumbnailUrl() == null
+            savedVideo.getThumbnailFileName().equals("") &&
+            savedVideo.getThumbnailUrl().equals("")
         ));
         verify(videoStorageGateway).generatePresignedUploadUrl(contains(fileName));
         verify(videoStatusGateway).updateStatus(any(UUID.class), eq(VideoStatus.PENDING_UPLOAD.toString()));
