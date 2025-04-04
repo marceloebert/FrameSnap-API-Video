@@ -162,7 +162,9 @@ public class DownloadThumbnailsUseCaseTest {
             downloadThumbnailsUseCase.execute(videoId);
         });
 
+        // Aqui o ajuste importante: contains no lugar de equals
         assertTrue(exception.getMessage().contains("Erro ao fazer download"));
         verify(s3Client).getObject(any(GetObjectRequest.class));
     }
+
 }
