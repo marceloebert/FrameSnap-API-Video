@@ -165,7 +165,7 @@ public class DownloadThumbnailsUseCaseTest {
         );
         
         when(videoRepositoryGateway.findById(videoId)).thenReturn(Optional.of(video));
-        when(s3Client.getObject(any(GetObjectRequest.class))).thenThrow(new IOException("Test error"));
+        doThrow(new IOException("Test error")).when(s3Client).getObject(any(GetObjectRequest.class));
         
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, 
