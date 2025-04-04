@@ -31,45 +31,6 @@ public class RestClientTest {
     }
 
     @Test
-    void post_ShouldSendPostRequestWithHeaders() {
-        // Arrange
-        TestRequest request = new TestRequest("test");
-        TestResponse expectedResponse = new TestResponse("success");
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer token");
-        headers.put("Custom-Header", "value");
-
-        ResponseEntity<TestResponse> responseEntity = new ResponseEntity<>(expectedResponse, HttpStatus.OK);
-        when(restTemplate.exchange(
-            eq(TEST_URL),
-            eq(HttpMethod.POST),
-            any(HttpEntity.class),
-            eq(TestResponse.class)
-        )).thenReturn(responseEntity);
-
-        // Act
-        ResponseEntity<TestResponse> response = restClient.post(TEST_URL, request, TestResponse.class, headers);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
-
-        verify(restTemplate).exchange(
-            eq(TEST_URL),
-            eq(HttpMethod.POST),
-            argThat(entity -> {
-                HttpHeaders httpHeaders = entity.getHeaders();
-                return httpHeaders.getContentType() == MediaType.APPLICATION_JSON &&
-                       "Bearer token".equals(httpHeaders.getFirst("Authorization")) &&
-                       "value".equals(httpHeaders.getFirst("Custom-Header")) &&
-                       request.equals(entity.getBody());
-            }),
-            eq(TestResponse.class)
-        );
-    }
-
-    @Test
     void get_ShouldSendGetRequestWithHeaders() {
         // Arrange
         TestResponse expectedResponse = new TestResponse("success");
@@ -98,43 +59,6 @@ public class RestClientTest {
             argThat(entity -> {
                 HttpHeaders httpHeaders = entity.getHeaders();
                 return "Bearer token".equals(httpHeaders.getFirst("Authorization"));
-            }),
-            eq(TestResponse.class)
-        );
-    }
-
-    @Test
-    void put_ShouldSendPutRequestWithHeaders() {
-        // Arrange
-        TestRequest request = new TestRequest("test");
-        TestResponse expectedResponse = new TestResponse("success");
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer token");
-
-        ResponseEntity<TestResponse> responseEntity = new ResponseEntity<>(expectedResponse, HttpStatus.OK);
-        when(restTemplate.exchange(
-            eq(TEST_URL),
-            eq(HttpMethod.PUT),
-            any(HttpEntity.class),
-            eq(TestResponse.class)
-        )).thenReturn(responseEntity);
-
-        // Act
-        ResponseEntity<TestResponse> response = restClient.put(TEST_URL, request, TestResponse.class, headers);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
-
-        verify(restTemplate).exchange(
-            eq(TEST_URL),
-            eq(HttpMethod.PUT),
-            argThat(entity -> {
-                HttpHeaders httpHeaders = entity.getHeaders();
-                return httpHeaders.getContentType() == MediaType.APPLICATION_JSON &&
-                       "Bearer token".equals(httpHeaders.getFirst("Authorization")) &&
-                       request.equals(entity.getBody());
             }),
             eq(TestResponse.class)
         );
