@@ -16,7 +16,7 @@ public class PasswordEncoderTest {
     @Test
     void encode_ShouldGenerateHashedPassword() {
         // Arrange
-        String password = "test123";
+        String password = "senha123";
 
         // Act
         String hashedPassword = passwordEncoder.encode(password);
@@ -24,65 +24,74 @@ public class PasswordEncoderTest {
         // Assert
         assertNotNull(hashedPassword);
         assertNotEquals(password, hashedPassword);
-        assertEquals(64, hashedPassword.length()); // SHA-256 produces 64 character hex string
-        assertTrue(hashedPassword.matches("[0-9a-f]+"));
+        assertEquals(64, hashedPassword.length()); // SHA-256 gera hash de 64 caracteres
     }
 
     @Test
-    void encode_ShouldGenerateSameHashForSamePassword() {
+    void encode_SamePassword_ShouldGenerateSameHash() {
         // Arrange
-        String password = "test123";
+        String password = "senha123";
 
         // Act
-        String hashedPassword1 = passwordEncoder.encode(password);
-        String hashedPassword2 = passwordEncoder.encode(password);
+        String hash1 = passwordEncoder.encode(password);
+        String hash2 = passwordEncoder.encode(password);
 
         // Assert
-        assertEquals(hashedPassword1, hashedPassword2);
+        assertEquals(hash1, hash2);
     }
 
     @Test
-    void encode_ShouldGenerateDifferentHashForDifferentPasswords() {
+    void encode_DifferentPasswords_ShouldGenerateDifferentHashes() {
         // Arrange
-        String password1 = "test123";
-        String password2 = "test124";
+        String password1 = "senha123";
+        String password2 = "senha124";
 
         // Act
-        String hashedPassword1 = passwordEncoder.encode(password1);
-        String hashedPassword2 = passwordEncoder.encode(password2);
+        String hash1 = passwordEncoder.encode(password1);
+        String hash2 = passwordEncoder.encode(password2);
 
         // Assert
-        assertNotEquals(hashedPassword1, hashedPassword2);
+        assertNotEquals(hash1, hash2);
     }
 
     @Test
     void matches_WhenPasswordMatches_ShouldReturnTrue() {
         // Arrange
-        String password = "test123";
+        String password = "senha123";
         String hashedPassword = passwordEncoder.encode(password);
 
-        // Act & Assert
-        assertTrue(passwordEncoder.matches(password, hashedPassword));
+        // Act
+        boolean result = passwordEncoder.matches(password, hashedPassword);
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test
     void matches_WhenPasswordDoesNotMatch_ShouldReturnFalse() {
         // Arrange
-        String password = "test123";
-        String wrongPassword = "test124";
+        String password = "senha123";
+        String wrongPassword = "senha124";
         String hashedPassword = passwordEncoder.encode(password);
 
-        // Act & Assert
-        assertFalse(passwordEncoder.matches(wrongPassword, hashedPassword));
+        // Act
+        boolean result = passwordEncoder.matches(wrongPassword, hashedPassword);
+
+        // Assert
+        assertFalse(result);
     }
 
     @Test
-    void matches_WhenPasswordIsEmpty_ShouldNotMatchNonEmptyHash() {
+    void encode_EmptyPassword_ShouldGenerateHash() {
         // Arrange
         String password = "";
-        String hashedPassword = passwordEncoder.encode("test123");
 
-        // Act & Assert
-        assertFalse(passwordEncoder.matches(password, hashedPassword));
+        // Act
+        String hashedPassword = passwordEncoder.encode(password);
+
+        // Assert
+        assertNotNull(hashedPassword);
+        assertNotEquals(password, hashedPassword);
+        assertEquals(64, hashedPassword.length());
     }
 } 

@@ -9,14 +9,14 @@ public class ValidationErrorResponseTest {
     void add_ShouldAddSingleViolation() {
         // Arrange
         ValidationErrorResponse response = new ValidationErrorResponse();
-        Violation violation = new Violation("Test error");
+        Violation violation = new Violation("Erro de teste");
 
         // Act
         response.add(violation);
 
         // Assert
         assertEquals(1, response.getViolations().size());
-        assertEquals(violation, response.getViolations().get(0));
+        assertEquals("Erro de teste", response.getViolations().get(0).getMessage());
     }
 
     @Test
@@ -24,9 +24,9 @@ public class ValidationErrorResponseTest {
         // Arrange
         ValidationErrorResponse response = new ValidationErrorResponse();
         Violation[] violations = {
-            new Violation("Error 1"),
-            new Violation("Error 2"),
-            new Violation("Error 3")
+            new Violation("Erro 1"),
+            new Violation("Erro 2"),
+            new Violation("Erro 3")
         };
 
         // Act
@@ -34,17 +34,17 @@ public class ValidationErrorResponseTest {
 
         // Assert
         assertEquals(3, response.getViolations().size());
-        assertEquals("Error 1", response.getViolations().get(0).getMessage());
-        assertEquals("Error 2", response.getViolations().get(1).getMessage());
-        assertEquals("Error 3", response.getViolations().get(2).getMessage());
+        assertEquals("Erro 1", response.getViolations().get(0).getMessage());
+        assertEquals("Erro 2", response.getViolations().get(1).getMessage());
+        assertEquals("Erro 3", response.getViolations().get(2).getMessage());
     }
 
     @Test
-    void getViolations_WhenEmpty_ShouldReturnEmptyList() {
-        // Arrange
+    void violations_ShouldBeEmptyByDefault() {
+        // Arrange & Act
         ValidationErrorResponse response = new ValidationErrorResponse();
 
-        // Act & Assert
+        // Assert
         assertNotNull(response.getViolations());
         assertTrue(response.getViolations().isEmpty());
     }

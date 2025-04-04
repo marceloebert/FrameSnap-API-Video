@@ -7,7 +7,7 @@ public class NotFoundExceptionTest {
 
     @Test
     void constructor_WhenNoArgs_ShouldSetDefaultMessage() {
-        // Act
+        // Arrange & Act
         NotFoundException exception = new NotFoundException();
 
         // Assert
@@ -15,9 +15,9 @@ public class NotFoundExceptionTest {
     }
 
     @Test
-    void constructor_WithCustomMessage_ShouldSetCustomMessage() {
+    void constructor_WhenCustomMessage_ShouldSetCustomMessage() {
         // Arrange
-        String customMessage = "Custom not found message";
+        String customMessage = "Recurso não encontrado";
 
         // Act
         NotFoundException exception = new NotFoundException(customMessage);
@@ -29,7 +29,7 @@ public class NotFoundExceptionTest {
     @Test
     void getMessage_ShouldReturnMessage() {
         // Arrange
-        String message = "Test message";
+        String message = "Mensagem personalizada";
         NotFoundException exception = new NotFoundException(message);
 
         // Act
