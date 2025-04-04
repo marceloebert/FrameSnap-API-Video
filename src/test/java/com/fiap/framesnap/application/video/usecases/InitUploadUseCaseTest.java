@@ -59,8 +59,9 @@ public class InitUploadUseCaseTest {
                 presignedUrl
         );
 
-        doReturn(video).when(videoRepositoryGateway).save(any(Video.class));
-        doReturn(presignedUrl).when(videoStorageGateway).generatePresignedUploadUrl(anyString());
+        doNothing().when(videoRepositoryGateway).save(any(Video.class));
+        when(videoStorageGateway.generatePresignedUploadUrl(anyString())).thenReturn(presignedUrl);
+        doNothing().when(videoStatusGateway).updateStatus(any(UUID.class), anyString());
 
         // Act
         InitUploadUseCase.InitUploadOutput result = initUploadUseCase.execute(fileName, userEmail);
@@ -91,7 +92,9 @@ public class InitUploadUseCaseTest {
                 .when(videoStorageGateway).generatePresignedUploadUrl(anyString());
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> initUploadUseCase.execute(fileName, userEmail));
+        RuntimeException exception = assertThrows(RuntimeException.class, 
+            () -> initUploadUseCase.execute(fileName, userEmail));
+        assertTrue(exception.getMessage().contains("Erro ao inicializar upload"));
         verify(videoRepositoryGateway, never()).save(any(Video.class));
         verify(videoStatusGateway, never()).updateStatus(any(), any());
     }

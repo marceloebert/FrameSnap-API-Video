@@ -140,7 +140,9 @@ public class DownloadThumbnailsUseCaseTest {
         when(videoRepositoryGateway.findById(videoId)).thenReturn(Optional.of(video));
         
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> downloadThumbnailsUseCase.execute(videoId.toString()));
+        RuntimeException exception = assertThrows(RuntimeException.class, 
+            () -> downloadThumbnailsUseCase.execute(videoId.toString()));
+        assertEquals("Thumbnails ainda não estão disponíveis", exception.getMessage());
         verify(s3Client, never()).getObject(any(GetObjectRequest.class));
     }
     
@@ -163,9 +165,11 @@ public class DownloadThumbnailsUseCaseTest {
         );
         
         when(videoRepositoryGateway.findById(videoId)).thenReturn(Optional.of(video));
-        when(s3Client.getObject(any(GetObjectRequest.class))).thenThrow(new IOException("Test error"));
+        doThrow(new IOException("Test error")).when(s3Client).getObject(any(GetObjectRequest.class));
         
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> downloadThumbnailsUseCase.execute(videoId.toString()));
+        RuntimeException exception = assertThrows(RuntimeException.class, 
+            () -> downloadThumbnailsUseCase.execute(videoId.toString()));
+        assertTrue(exception.getMessage().contains("Erro ao baixar thumbnails"));
     }
 } 
