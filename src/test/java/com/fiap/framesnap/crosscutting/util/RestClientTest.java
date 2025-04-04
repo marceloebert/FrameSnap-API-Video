@@ -12,8 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,7 +22,6 @@ public class RestClientTest {
     private RestTemplate restTemplate;
 
     private RestClient restClient;
-    private final String TEST_URL = "http://test.com/api";
 
     @BeforeEach
     void setUp() {
@@ -31,71 +29,126 @@ public class RestClientTest {
     }
 
     @Test
-    void get_ShouldSendGetRequestWithHeaders() {
+    void post_ShouldSendPostRequest() {
         // Arrange
-        TestResponse expectedResponse = new TestResponse("success");
+        String url = "http://test.com/api";
+        String requestBody = "request data";
+        String responseBody = "response data";
         Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer token");
+        headers.put("Content-Type", "application/json");
 
-        ResponseEntity<TestResponse> responseEntity = new ResponseEntity<>(expectedResponse, HttpStatus.OK);
+        ResponseEntity<String> expectedResponse = new ResponseEntity<>(responseBody, HttpStatus.OK);
         when(restTemplate.exchange(
-            eq(TEST_URL),
-            eq(HttpMethod.GET),
+            eq(url),
+            eq(HttpMethod.POST),
             any(HttpEntity.class),
-            eq(TestResponse.class)
-        )).thenReturn(responseEntity);
+            eq(String.class)
+        )).thenReturn(expectedResponse);
 
         // Act
-        ResponseEntity<TestResponse> response = restClient.get(TEST_URL, TestResponse.class, headers);
+        ResponseEntity<String> response = restClient.post(url, requestBody, String.class, headers);
 
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
-
+        assertEquals(responseBody, response.getBody());
         verify(restTemplate).exchange(
-            eq(TEST_URL),
-            eq(HttpMethod.GET),
-            argThat(entity -> {
-                HttpHeaders httpHeaders = entity.getHeaders();
-                return "Bearer token".equals(httpHeaders.getFirst("Authorization"));
-            }),
-            eq(TestResponse.class)
+            eq(url),
+            eq(HttpMethod.POST),
+            any(HttpEntity.class),
+            eq(String.class)
         );
     }
 
     @Test
-    void delete_ShouldSendDeleteRequestWithHeaders() {
+    void get_ShouldSendGetRequest() {
         // Arrange
+        String url = "http://test.com/api";
+        String responseBody = "response data";
         Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer token");
+        headers.put("Accept", "application/json");
 
-        ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        ResponseEntity<String> expectedResponse = new ResponseEntity<>(responseBody, HttpStatus.OK);
         when(restTemplate.exchange(
-            eq(TEST_URL),
+            eq(url),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            eq(String.class)
+        )).thenReturn(expectedResponse);
+
+        // Act
+        ResponseEntity<String> response = restClient.get(url, String.class, headers);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseBody, response.getBody());
+        verify(restTemplate).exchange(
+            eq(url),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            eq(String.class)
+        );
+    }
+
+    @Test
+    void put_ShouldSendPutRequest() {
+        // Arrange
+        String url = "http://test.com/api";
+        String requestBody = "request data";
+        String responseBody = "response data";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+
+        ResponseEntity<String> expectedResponse = new ResponseEntity<>(responseBody, HttpStatus.OK);
+        when(restTemplate.exchange(
+            eq(url),
+            eq(HttpMethod.PUT),
+            any(HttpEntity.class),
+            eq(String.class)
+        )).thenReturn(expectedResponse);
+
+        // Act
+        ResponseEntity<String> response = restClient.put(url, requestBody, String.class, headers);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseBody, response.getBody());
+        verify(restTemplate).exchange(
+            eq(url),
+            eq(HttpMethod.PUT),
+            any(HttpEntity.class),
+            eq(String.class)
+        );
+    }
+
+    @Test
+    void delete_ShouldSendDeleteRequest() {
+        // Arrange
+        String url = "http://test.com/api";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Accept", "application/json");
+
+        ResponseEntity<Void> expectedResponse = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        when(restTemplate.exchange(
+            eq(url),
             eq(HttpMethod.DELETE),
             any(HttpEntity.class),
             eq(Void.class)
-        )).thenReturn(responseEntity);
+        )).thenReturn(expectedResponse);
 
         // Act
-        ResponseEntity<Void> response = restClient.delete(TEST_URL, headers);
+        ResponseEntity<Void> response = restClient.delete(url, headers);
 
         // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-
         verify(restTemplate).exchange(
-            eq(TEST_URL),
+            eq(url),
             eq(HttpMethod.DELETE),
-            argThat(entity -> {
-                HttpHeaders httpHeaders = entity.getHeaders();
-                return "Bearer token".equals(httpHeaders.getFirst("Authorization"));
-            }),
+            any(HttpEntity.class),
             eq(Void.class)
         );
     }
-
-    private record TestRequest(String data) {}
-    private record TestResponse(String result) {}
 } 

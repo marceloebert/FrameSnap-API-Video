@@ -52,7 +52,31 @@ public class HashUtilTest {
     }
 
     @Test
-    void calculateSecretHash_WhenNullInput_ShouldThrowException() {
+    void calculateSecretHash_WhenNullClientId_ShouldThrowException() {
+        // Arrange
+        String clientSecret = "testClientSecret";
+        String username = "testUser";
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> 
+            HashUtil.calculateSecretHash(null, clientSecret, username)
+        );
+    }
+
+    @Test
+    void calculateSecretHash_WhenNullClientSecret_ShouldThrowException() {
+        // Arrange
+        String clientId = "testClientId";
+        String username = "testUser";
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> 
+            HashUtil.calculateSecretHash(clientId, null, username)
+        );
+    }
+
+    @Test
+    void calculateSecretHash_WhenNullUsername_ShouldThrowException() {
         // Arrange
         String clientId = "testClientId";
         String clientSecret = "testClientSecret";
@@ -64,17 +88,38 @@ public class HashUtilTest {
     }
 
     @Test
-    void calculateSecretHash_WhenEmptyInput_ShouldGenerateHash() {
+    void calculateSecretHash_WhenEmptyClientId_ShouldThrowException() {
         // Arrange
-        String clientId = "";
-        String clientSecret = "";
-        String username = "";
+        String clientSecret = "testClientSecret";
+        String username = "testUser";
 
-        // Act
-        String hash = HashUtil.calculateSecretHash(clientId, clientSecret, username);
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> 
+            HashUtil.calculateSecretHash("", clientSecret, username)
+        );
+    }
 
-        // Assert
-        assertNotNull(hash);
-        assertTrue(hash.length() > 0);
+    @Test
+    void calculateSecretHash_WhenEmptyClientSecret_ShouldThrowException() {
+        // Arrange
+        String clientId = "testClientId";
+        String username = "testUser";
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> 
+            HashUtil.calculateSecretHash(clientId, "", username)
+        );
+    }
+
+    @Test
+    void calculateSecretHash_WhenEmptyUsername_ShouldThrowException() {
+        // Arrange
+        String clientId = "testClientId";
+        String clientSecret = "testClientSecret";
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> 
+            HashUtil.calculateSecretHash(clientId, clientSecret, "")
+        );
     }
 } 

@@ -1,26 +1,20 @@
 package com.fiap.framesnap.crosscutting.exception;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ErrorHandlingControllerAdviceTest {
 
-    private ErrorHandlingControllerAdvice errorHandlingControllerAdvice;
-
-    @BeforeEach
-    void setUp() {
-        errorHandlingControllerAdvice = new ErrorHandlingControllerAdvice();
-    }
+    private final ErrorHandlingControllerAdvice advice = new ErrorHandlingControllerAdvice();
 
     @Test
-    void notFoundException_WithCustomMessage_ShouldReturnValidationErrorResponse() {
+    void notFoundException_ShouldReturnValidationErrorResponse() {
         // Arrange
-        String errorMessage = "Resource not found";
+        String errorMessage = "Recurso não encontrado";
         NotFoundException exception = new NotFoundException(errorMessage);
 
         // Act
-        ValidationErrorResponse response = errorHandlingControllerAdvice.notFoundException(exception);
+        ValidationErrorResponse response = advice.notFoundException(exception);
 
         // Assert
         assertNotNull(response);
@@ -29,12 +23,12 @@ public class ErrorHandlingControllerAdviceTest {
     }
 
     @Test
-    void notFoundException_WithDefaultMessage_ShouldReturnValidationErrorResponse() {
+    void notFoundException_WhenNoMessage_ShouldReturnDefaultMessage() {
         // Arrange
         NotFoundException exception = new NotFoundException();
 
         // Act
-        ValidationErrorResponse response = errorHandlingControllerAdvice.notFoundException(exception);
+        ValidationErrorResponse response = advice.notFoundException(exception);
 
         // Assert
         assertNotNull(response);
@@ -43,21 +37,16 @@ public class ErrorHandlingControllerAdviceTest {
     }
 
     @Test
-    void notFoundException_ShouldCreateNewViolation() {
+    void notFoundException_WhenNullMessage_ShouldHandleNull() {
         // Arrange
-        String errorMessage = "Custom error message";
-        NotFoundException exception = new NotFoundException(errorMessage);
+        NotFoundException exception = new NotFoundException(null);
 
         // Act
-        ValidationErrorResponse response = errorHandlingControllerAdvice.notFoundException(exception);
+        ValidationErrorResponse response = advice.notFoundException(exception);
 
         // Assert
         assertNotNull(response);
-        assertNotNull(response.getViolations());
         assertEquals(1, response.getViolations().size());
-        
-        Violation violation = response.getViolations().get(0);
-        assertNotNull(violation);
-        assertEquals(errorMessage, violation.getMessage());
+        assertNull(response.getViolations().get(0).getMessage());
     }
 } 

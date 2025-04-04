@@ -8,6 +8,16 @@ import javax.crypto.spec.SecretKeySpec;
 public class HashUtil {
 
     public static String calculateSecretHash(String clientId, String clientSecret, String username) {
+        if (clientId == null || clientId.isEmpty()) {
+            throw new RuntimeException("ClientId não pode ser nulo ou vazio");
+        }
+        if (clientSecret == null || clientSecret.isEmpty()) {
+            throw new RuntimeException("ClientSecret não pode ser nulo ou vazio");
+        }
+        if (username == null || username.isEmpty()) {
+            throw new RuntimeException("Username não pode ser nulo ou vazio");
+        }
+
         try {
             String message = username + clientId;
             SecretKeySpec signingKey = new SecretKeySpec(clientSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
