@@ -1,1 +1,1 @@
-rootProject.name = "lanchonete"
+rootProject.name = "framesnap-video"
