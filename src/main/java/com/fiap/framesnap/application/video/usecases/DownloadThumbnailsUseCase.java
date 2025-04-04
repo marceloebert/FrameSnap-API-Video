@@ -1,15 +1,13 @@
 package com.fiap.framesnap.application.video.usecases;
 
 import com.fiap.framesnap.application.video.gateways.VideoRepositoryGateway;
+import com.fiap.framesnap.application.video.gateways.VideoStorageGateway;
 import com.fiap.framesnap.entities.video.Video;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -17,16 +15,13 @@ import java.util.UUID;
 public class DownloadThumbnailsUseCase {
 
     private final VideoRepositoryGateway videoRepositoryGateway;
-    private final S3Client s3Client;
-    private final String bucketName;
+    private final VideoStorageGateway videoStorageGateway;
 
     public DownloadThumbnailsUseCase(
             VideoRepositoryGateway videoRepositoryGateway,
-            S3Client s3Client,
-            String bucketName) {
+            VideoStorageGateway videoStorageGateway) {
         this.videoRepositoryGateway = videoRepositoryGateway;
-        this.s3Client = s3Client;
-        this.bucketName = bucketName;
+        this.videoStorageGateway = videoStorageGateway;
     }
 
     public record ThumbnailDownloadResult(
@@ -45,18 +40,13 @@ public class DownloadThumbnailsUseCase {
         }
 
         try {
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(video.getThumbnailFileName())
-                    .build();
-
-            ResponseInputStream<GetObjectResponse> response = s3Client.getObject(getObjectRequest);
+            InputStream inputStream = videoStorageGateway.downloadVideo(video.getThumbnailFileName());
 
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             int nRead;
             byte[] data = new byte[16384];
 
-            while ((nRead = response.read(data, 0, data.length)) != -1) {
+            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
                 buffer.write(data, 0, nRead);
             }
 

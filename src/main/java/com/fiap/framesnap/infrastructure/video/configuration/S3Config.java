@@ -8,15 +8,12 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import com.fiap.framesnap.infrastructure.video.configuration.AwsCredentialsProperties;
 import software.amazon.awssdk.services.s3.S3Configuration;
-
-import java.net.URI;
 
 @Configuration
 @EnableConfigurationProperties({AwsCredentialsProperties.class, S3Properties.class})
@@ -34,52 +31,33 @@ public class S3Config {
     }
 
     @Bean
-    public S3Client s3Client(AwsCredentialsProperties creds) {
-        var credentials = AwsSessionCredentials.create(
-                creds.getAccessKey(),
-                creds.getSecretKey(),
-                creds.getSessionToken()
-        );
-
-        S3Configuration s3Configuration = S3Configuration.builder()
-                .pathStyleAccessEnabled(true)
-                .build();
-
+    public S3Client s3Client() {
         return S3Client.builder()
-                .region(Region.of(creds.getRegion()))
-                .credentialsProvider(StaticCredentialsProvider.create(credentials))
-                .endpointOverride(URI.create(props.getEndpoint()))
-                .serviceConfiguration(s3Configuration)
+                .region(Region.of(props.getRegion()))
+                .credentialsProvider(DefaultCredentialsProvider.create())
                 .build();
     }
 
     @Bean
-    public S3Presigner s3Presigner(AwsCredentialsProperties creds) {
-        var credentials = AwsSessionCredentials.create(
-                creds.getAccessKey(),
-                creds.getSecretKey(),
-                creds.getSessionToken()
-        );
-
+    public S3Presigner s3Presigner() {
         return S3Presigner.builder()
-                .region(Region.of(creds.getRegion()))
-                .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                .region(Region.of(props.getRegion()))
+                .credentialsProvider(DefaultCredentialsProvider.create())
                 .build();
     }
 
     @Bean
     public VideoStorageGateway videoStorageGateway(S3Client s3Client, S3Presigner s3Presigner) {
-        return new S3VideoStorageGateway(s3Client, s3Presigner, props.getBucket());
+        return new S3VideoStorageGateway(s3Client, s3Presigner, props.getBucket(), Region.of(props.getRegion()));
     }
 
     @Bean
     public DownloadThumbnailsUseCase downloadThumbnailsUseCase(
             VideoRepositoryGateway videoRepositoryGateway,
-            S3Client s3Client) {
+            VideoStorageGateway videoStorageGateway) {
         return new DownloadThumbnailsUseCase(
             videoRepositoryGateway,
-            s3Client,
-            props.getBucket()
+            videoStorageGateway
         );
     }
 }

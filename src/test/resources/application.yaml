@@ -1,0 +1,24 @@
+aws:
+  credentials:
+    access-key: test-access-key
+    secret-key: test-secret-key
+    session-token: test-session-token
+    region: us-east-1
+
+  s3:
+    endpoint: http://localhost:4566
+    bucket: test-bucket
+    region: us-east-1
+
+  sqs:
+    queue-url: http://localhost:4566/000000000000/test-queue
+
+  dynamodb:
+    endpoint: http://localhost:4566
+    table-name: test-table
+
+redis:
+  host: localhost
+  port: 6379
+  username: default
+  password: test-password 

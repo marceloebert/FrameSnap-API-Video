@@ -34,6 +34,7 @@ aws:
   s3:
     endpoint: ${S3_ENDPOINT}
     bucket: ${S3_BUCKET}
+    region: ${AWS_REGION}
 
   sqs:
     queue-url: ${SQS_QUEUE_URL}

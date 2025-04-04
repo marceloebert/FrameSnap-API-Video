@@ -35,10 +35,11 @@ public class S3VideoStorageGatewayTest {
 
     private S3VideoStorageGateway s3VideoStorageGateway;
     private final String BUCKET_NAME = "test-bucket";
+    private final Region REGION = Region.US_EAST_1;
 
     @BeforeEach
     void setUp() {
-        s3VideoStorageGateway = new S3VideoStorageGateway(s3Client, s3Presigner, BUCKET_NAME);
+        s3VideoStorageGateway = new S3VideoStorageGateway(s3Client, s3Presigner, BUCKET_NAME, REGION);
     }
 
     @Test

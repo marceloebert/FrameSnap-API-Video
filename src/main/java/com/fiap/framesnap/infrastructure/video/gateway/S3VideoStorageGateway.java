@@ -21,11 +21,11 @@ public class S3VideoStorageGateway implements VideoStorageGateway {
     private final Region region;
     private final S3Presigner s3Presigner;
 
-    public S3VideoStorageGateway(S3Client s3Client, S3Presigner s3Presigner, String bucketName) {
+    public S3VideoStorageGateway(S3Client s3Client, S3Presigner s3Presigner, String bucketName, Region region) {
         this.s3Client = s3Client;
         this.s3Presigner = s3Presigner;
         this.bucketName = bucketName;
-        this.region = s3Client.serviceClientConfiguration().region();
+        this.region = region;
     }
 
     @Override

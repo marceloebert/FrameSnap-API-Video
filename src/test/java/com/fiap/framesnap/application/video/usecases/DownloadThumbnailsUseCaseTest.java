@@ -1,6 +1,7 @@
 package com.fiap.framesnap.application.video.usecases;
 
 import com.fiap.framesnap.application.video.gateways.VideoRepositoryGateway;
+import com.fiap.framesnap.application.video.gateways.VideoStorageGateway;
 import com.fiap.framesnap.entities.video.Video;
 import com.fiap.framesnap.entities.video.VideoStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,13 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.core.exception.SdkClientException;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,18 +28,16 @@ public class DownloadThumbnailsUseCaseTest {
     private VideoRepositoryGateway videoRepositoryGateway;
 
     @Mock
-    private S3Client s3Client;
+    private VideoStorageGateway videoStorageGateway;
 
     private DownloadThumbnailsUseCase downloadThumbnailsUseCase;
-    private final String bucketName = "test-bucket";
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         downloadThumbnailsUseCase = new DownloadThumbnailsUseCase(
                 videoRepositoryGateway,
-                s3Client,
-                bucketName
+                videoStorageGateway
         );
     }
 
@@ -65,11 +60,10 @@ public class DownloadThumbnailsUseCaseTest {
         );
 
         byte[] testData = "test data".getBytes();
-        ResponseInputStream<GetObjectResponse> responseInputStream =
-                new ResponseInputStream<>(GetObjectResponse.builder().build(), new ByteArrayInputStream(testData));
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(testData);
 
         when(videoRepositoryGateway.findById(videoId)).thenReturn(Optional.of(video));
-        when(s3Client.getObject(any(GetObjectRequest.class))).thenReturn(responseInputStream);
+        when(videoStorageGateway.downloadVideo(thumbnailFileName)).thenReturn(inputStream);
 
         var result = downloadThumbnailsUseCase.execute(videoId.toString());
 
@@ -79,11 +73,7 @@ public class DownloadThumbnailsUseCaseTest {
         assertNotNull(result.base64Content());
         assertTrue(result.base64Content().length() > 0);
 
-        GetObjectRequest expectedRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(thumbnailFileName)
-                .build();
-        verify(s3Client).getObject(expectedRequest);
+        verify(videoStorageGateway).downloadVideo(thumbnailFileName);
     }
 
     @Test
@@ -92,7 +82,7 @@ public class DownloadThumbnailsUseCaseTest {
         when(videoRepositoryGateway.findById(videoId)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> downloadThumbnailsUseCase.execute(videoId.toString()));
-        verify(s3Client, never()).getObject(any(GetObjectRequest.class));
+        verify(videoStorageGateway, never()).downloadVideo(any());
     }
 
     @Test
@@ -110,7 +100,7 @@ public class DownloadThumbnailsUseCaseTest {
         when(videoRepositoryGateway.findById(videoId)).thenReturn(Optional.of(video));
 
         assertThrows(RuntimeException.class, () -> downloadThumbnailsUseCase.execute(videoId.toString()));
-        verify(s3Client, never()).getObject(any(GetObjectRequest.class));
+        verify(videoStorageGateway, never()).downloadVideo(any());
     }
 
     @Test
@@ -135,11 +125,11 @@ public class DownloadThumbnailsUseCaseTest {
         });
 
         assertEquals("Thumbnails ainda não estão disponíveis", exception.getMessage());
-        verify(s3Client, never()).getObject(any(GetObjectRequest.class));
+        verify(videoStorageGateway, never()).downloadVideo(any());
     }
 
     @Test
-    void execute_WhenS3ClientThrowsException_ShouldThrowRuntimeException() {
+    void execute_WhenStorageGatewayThrowsException_ShouldThrowRuntimeException() {
         String videoId = UUID.randomUUID().toString();
         String thumbnailFileName = "thumbnail.zip";
         Video video = new Video(
@@ -155,16 +145,14 @@ public class DownloadThumbnailsUseCaseTest {
         );
 
         when(videoRepositoryGateway.findById(any(UUID.class))).thenReturn(Optional.of(video));
-        when(s3Client.getObject(any(GetObjectRequest.class)))
-                .thenThrow(SdkClientException.create("Erro simulado do S3"));
+        when(videoStorageGateway.downloadVideo(thumbnailFileName))
+                .thenThrow(new RuntimeException("Erro ao fazer download"));
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             downloadThumbnailsUseCase.execute(videoId);
         });
 
-        // Aqui o ajuste importante: contains no lugar de equals
         assertTrue(exception.getMessage().contains("Erro ao fazer download"));
-        verify(s3Client).getObject(any(GetObjectRequest.class));
+        verify(videoStorageGateway).downloadVideo(thumbnailFileName);
     }
-
 }
