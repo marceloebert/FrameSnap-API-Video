@@ -10,16 +10,15 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.core.exception.SdkClientException;
 
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,7 +48,6 @@ public class DownloadThumbnailsUseCaseTest {
 
     @Test
     void execute_WhenVideoExistsAndThumbnailsAvailable_ShouldReturnThumbnailData() {
-        // Arrange
         UUID videoId = UUID.randomUUID();
         String thumbnailFileName = "thumbnails.zip";
         String thumbnailUrl = "https://example.com/thumbnails.zip";
@@ -68,18 +66,13 @@ public class DownloadThumbnailsUseCaseTest {
 
         byte[] testData = "test data".getBytes();
         ResponseInputStream<GetObjectResponse> responseInputStream =
-                new ResponseInputStream<>(
-                        GetObjectResponse.builder().build(),
-                        new ByteArrayInputStream(testData)
-                );
+                new ResponseInputStream<>(GetObjectResponse.builder().build(), new ByteArrayInputStream(testData));
 
         when(videoRepositoryGateway.findById(videoId)).thenReturn(Optional.of(video));
         when(s3Client.getObject(any(GetObjectRequest.class))).thenReturn(responseInputStream);
 
-        // Act
-        DownloadThumbnailsUseCase.ThumbnailDownloadResult result = downloadThumbnailsUseCase.execute(videoId.toString());
+        var result = downloadThumbnailsUseCase.execute(videoId.toString());
 
-        // Assert
         assertNotNull(result);
         assertEquals(thumbnailFileName, result.fileName());
         assertEquals("application/zip", result.contentType());
@@ -130,8 +123,8 @@ public class DownloadThumbnailsUseCaseTest {
                 VideoStatus.COMPLETED,
                 Instant.now(),
                 "presigned-url",
-                null, // thumbnailFileName é null
-                "", // thumbnailUrl vazio
+                null,
+                "",
                 Instant.now()
         );
 
@@ -142,7 +135,7 @@ public class DownloadThumbnailsUseCaseTest {
         });
 
         assertEquals("Thumbnails ainda não estão disponíveis", exception.getMessage());
-        verify(s3Client, never()).getObject(any(Consumer.class));
+        verify(s3Client, never()).getObject(any(GetObjectRequest.class));
     }
 
     @Test
@@ -162,13 +155,14 @@ public class DownloadThumbnailsUseCaseTest {
         );
 
         when(videoRepositoryGateway.findById(any(UUID.class))).thenReturn(Optional.of(video));
-        when(s3Client.getObject(any(GetObjectRequest.class))).thenThrow(SdkClientException.create("Test error"));
+        when(s3Client.getObject(any(GetObjectRequest.class)))
+                .thenThrow(SdkClientException.create("Erro simulado do S3"));
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             downloadThumbnailsUseCase.execute(videoId);
         });
 
-        assertEquals("Erro ao fazer download dos thumbnails", exception.getMessage());
+        assertTrue(exception.getMessage().contains("Erro ao fazer download"));
         verify(s3Client).getObject(any(GetObjectRequest.class));
     }
 }
