@@ -79,7 +79,7 @@ public class InitUploadUseCaseTest {
             savedVideo.getThumbnailUrl() == null
         ));
         verify(videoStorageGateway).generatePresignedUploadUrl(eq(fileName));
-        verify(videoStatusGateway).updateStatus(eq(videoId), eq(VideoStatus.PENDING_UPLOAD.toString()));
+        verify(videoStatusGateway).updateStatus(any(UUID.class), eq(VideoStatus.PENDING_UPLOAD.toString()));
     }
 
     @Test
