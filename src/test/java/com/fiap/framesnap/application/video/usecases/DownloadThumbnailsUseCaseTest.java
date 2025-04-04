@@ -173,7 +173,7 @@ public class DownloadThumbnailsUseCaseTest {
         );
 
         when(videoRepositoryGateway.findById(any(UUID.class))).thenReturn(Optional.of(video));
-        doThrow(new IOException("Test error")).when(s3Client).getObject(any(Consumer.class));
+        when(s3Client.getObject(any(GetObjectRequest.class))).thenThrow(new IOException("Test error"));
 
         // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
@@ -181,6 +181,6 @@ public class DownloadThumbnailsUseCaseTest {
         });
 
         assertEquals("Erro ao fazer download dos thumbnails", exception.getMessage());
-        verify(s3Client).getObject(any(Consumer.class));
+        verify(s3Client).getObject(any(GetObjectRequest.class));
     }
 } 
