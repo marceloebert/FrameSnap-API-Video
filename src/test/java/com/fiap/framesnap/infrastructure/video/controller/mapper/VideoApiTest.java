@@ -95,7 +95,7 @@ class VideoApiTest {
         ResponseEntity<VideoStatusResponse> response = videoApi.getStatus(videoId.toString());
 
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals(VideoStatus.COMPLETED.toString(), response.getBody().status());
+        assertEquals(VideoStatus.COMPLETED.name(), response.getBody().status().toUpperCase());
         assertEquals("http://img", response.getBody().thumbnailUrl());
     }
 
