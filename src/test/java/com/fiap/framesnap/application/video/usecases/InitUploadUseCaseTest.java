@@ -49,6 +49,7 @@ public class InitUploadUseCaseTest {
         String userEmail = "test@example.com";
         String presignedUrl = "https://example.com/presigned-url";
 
+        // Configurar os mocks
         doNothing().when(videoRepositoryGateway).save(any(Video.class));
         when(videoStorageGateway.generatePresignedUploadUrl(anyString())).thenReturn(presignedUrl);
         doNothing().when(videoStatusGateway).updateStatus(any(UUID.class), anyString());
@@ -61,6 +62,7 @@ public class InitUploadUseCaseTest {
         assertEquals(presignedUrl, result.presignedUrl());
         assertNotNull(result.videoId());
         
+        // Verificar se o vídeo foi salvo com os parâmetros corretos
         verify(videoRepositoryGateway).save(argThat(savedVideo -> 
             savedVideo.getFileName().equals(fileName) &&
             savedVideo.getUserEmail().equals(userEmail) &&
@@ -68,7 +70,11 @@ public class InitUploadUseCaseTest {
             savedVideo.getThumbnailFileName().equals("") &&
             savedVideo.getThumbnailUrl().equals("")
         ));
+        
+        // Verificar se a URL pré-assinada foi gerada com o nome do arquivo
         verify(videoStorageGateway).generatePresignedUploadUrl(contains(fileName));
+        
+        // Verificar se o status foi atualizado
         verify(videoStatusGateway).updateStatus(any(UUID.class), eq(VideoStatus.PENDING_UPLOAD.toString()));
     }
 
