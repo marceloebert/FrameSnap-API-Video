@@ -1,3 +1,4 @@
+// Arquivo: VideoApiTest.java
 package com.fiap.framesnap.infrastructure.video.controller;
 
 import com.fiap.framesnap.application.video.usecases.*;
@@ -93,8 +94,7 @@ class VideoApiTest {
 
         ResponseEntity<VideoStatusResponse> response = videoApi.getStatus(videoId.toString());
 
-        System.out.println("Status retornado: " + response.getBody().status());
-        assertTrue(response.getBody().status().toLowerCase().contains("completed"));
+        assertEquals("completed", response.getBody().status().toLowerCase());
         assertEquals("http://img", response.getBody().thumbnailUrl());
     }
 
