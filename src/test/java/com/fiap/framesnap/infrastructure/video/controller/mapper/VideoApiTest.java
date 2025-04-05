@@ -1,4 +1,3 @@
-// Arquivo: VideoApiTest.java
 package com.fiap.framesnap.infrastructure.video.controller;
 
 import com.fiap.framesnap.application.video.usecases.*;
