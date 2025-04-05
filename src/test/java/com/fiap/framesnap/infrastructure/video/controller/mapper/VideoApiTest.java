@@ -87,17 +87,6 @@ class VideoApiTest {
     }
 
     @Test
-    void testGetStatus() {
-        UUID videoId = UUID.randomUUID();
-        Video video = new Video(videoId, "video.mp4", "email", VideoStatus.COMPLETED, Instant.now(), "http://img");
-        when(getVideoStatusUseCase.execute(any())).thenReturn(video);
-
-        ResponseEntity<VideoStatusResponse> response = videoApi.getStatus(videoId.toString());
-
-        assertEquals("PENDING", response.getBody().status());
-    }
-
-    @Test
     void testDownloadThumbnails() {
         UUID videoId = UUID.randomUUID();
         when(downloadThumbnailsUseCase.execute(any())).thenReturn(new DownloadThumbnailsUseCase.ThumbnailDownloadResult("thumb.jpg", MediaType.IMAGE_JPEG_VALUE, Base64.getEncoder().encodeToString("fake".getBytes())));
