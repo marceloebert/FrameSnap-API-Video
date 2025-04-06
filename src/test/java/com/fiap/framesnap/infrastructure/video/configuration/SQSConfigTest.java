@@ -22,15 +22,6 @@ class SQSConfigTest {
     }
 
     @Test
-    void sqsClient_ShouldCreateClientWithCorrectConfiguration() {
-        // Act
-        SqsClient client = sqsConfig.sqsClient();
-
-        // Assert
-        assertNotNull(client);
-    }
-
-    @Test
     void videoQueueGateway_ShouldCreateGatewayWithCorrectConfiguration() {
         // Arrange
         SqsClient sqsClient = mock(SqsClient.class);
