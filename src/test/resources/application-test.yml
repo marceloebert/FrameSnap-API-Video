@@ -1,0 +1,41 @@
+spring:
+  cloud:
+    aws:
+      credentials:
+        access-key: test
+        secret-key: test
+      region:
+        static: us-east-1
+      endpoint:
+        uri: http://localhost:4566
+      s3:
+        endpoint: http://localhost:4566
+      dynamodb:
+        endpoint: http://localhost:4566
+      sqs:
+        endpoint: http://localhost:4566
+
+aws:
+  credentials:
+    access-key: test
+    secret-key: test
+    session-token: test
+    region: us-east-1
+
+dynamodb:
+  endpoint: http://localhost:4566
+  table-name: test-table
+
+s3:
+  endpoint: http://localhost:4566
+  bucket-name: test-bucket
+  region: us-east-1
+
+sqs:
+  queue-url: http://localhost:4566/000000000000/test-queue
+
+redis:
+  host: localhost
+  port: 6379
+  username: test
+  password: test 
