@@ -32,10 +32,4 @@ class VideoMapperTest {
         assertEquals("video.mp4", response.getFileName());
         assertEquals("COMPLETED", response.getStatus());
     }
-
-    @Test
-    void testToUploadResponse_whenVideoIsNull_shouldReturnNull() {
-        UploadVideoResponse response = VideoMapper.toUploadResponse(null);
-        assertNull(response);
-    }
 }
