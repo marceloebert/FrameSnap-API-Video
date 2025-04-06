@@ -34,12 +34,8 @@ class VideoMapperTest {
     }
 
     @Test
-    void testToUploadResponse_whenVideoIsNull_shouldReturnNullFields() {
+    void testToUploadResponse_whenVideoIsNull_shouldReturnNull() {
         UploadVideoResponse response = VideoMapper.toUploadResponse(null);
-
-        assertNotNull(response);
-        assertNull(response.getId());
-        assertNull(response.getFileName());
-        assertNull(response.getStatus());
+        assertNull(response);
     }
 }
