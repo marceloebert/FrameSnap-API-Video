@@ -5,10 +5,15 @@ import com.fiap.framesnap.entities.video.Video;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class VideoRepository implements VideoRepositoryGateway {
@@ -28,5 +33,15 @@ public class VideoRepository implements VideoRepositoryGateway {
     public Optional<Video> findById(UUID videoId) {
         Video video = videoTable.getItem(r -> r.key(k -> k.partitionValue(videoId.toString())));
         return Optional.ofNullable(video);
+    }
+
+    @Override
+    public List<Video> findByUserEmail(String userEmail) {
+        return videoTable.query(QueryEnhancedRequest.builder()
+                .queryConditional(QueryConditional.keyEqualTo(Key.builder().partitionValue(userEmail).build()))
+                .build())
+                .items()
+                .stream()
+                .collect(Collectors.toList());
     }
 }

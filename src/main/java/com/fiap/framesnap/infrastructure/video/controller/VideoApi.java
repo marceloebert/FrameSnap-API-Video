@@ -5,6 +5,7 @@ import com.fiap.framesnap.application.video.usecases.UpdateVideoStatusUseCase;
 import com.fiap.framesnap.application.video.usecases.UpdateVideoMetadataUseCase;
 import com.fiap.framesnap.application.video.usecases.GetVideoStatusUseCase;
 import com.fiap.framesnap.application.video.usecases.DownloadThumbnailsUseCase;
+import com.fiap.framesnap.application.video.usecases.GetUserVideosUseCase;
 import com.fiap.framesnap.infrastructure.video.controller.dto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,8 @@ import com.fiap.framesnap.application.video.usecases.InitUploadUseCase;
 import com.fiap.framesnap.entities.video.Video;
 
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/videos")
@@ -25,6 +28,7 @@ public class VideoApi {
     private final UpdateVideoMetadataUseCase updateVideoMetadataUseCase;
     private final GetVideoStatusUseCase getVideoStatusUseCase;
     private final DownloadThumbnailsUseCase downloadThumbnailsUseCase;
+    private final GetUserVideosUseCase getUserVideosUseCase;
 
     public VideoApi(
             DownloadVideoUseCase downloadVideoUseCase,
@@ -32,13 +36,15 @@ public class VideoApi {
             UpdateVideoStatusUseCase updateVideoStatusUseCase,
             UpdateVideoMetadataUseCase updateVideoMetadataUseCase,
             GetVideoStatusUseCase getVideoStatusUseCase,
-            DownloadThumbnailsUseCase downloadThumbnailsUseCase) {
+            DownloadThumbnailsUseCase downloadThumbnailsUseCase,
+            GetUserVideosUseCase getUserVideosUseCase) {
         this.downloadVideoUseCase = downloadVideoUseCase;
         this.initUploadUseCase = initUploadUseCase;
         this.updateVideoStatusUseCase = updateVideoStatusUseCase;
         this.updateVideoMetadataUseCase = updateVideoMetadataUseCase;
         this.getVideoStatusUseCase = getVideoStatusUseCase;
         this.downloadThumbnailsUseCase = downloadThumbnailsUseCase;
+        this.getUserVideosUseCase = getUserVideosUseCase;
     }
 
     @PostMapping("/init-upload")
@@ -108,5 +114,24 @@ public class VideoApi {
         return ResponseEntity.ok()
             .headers(headers)
             .body(fileContent);
+    }
+
+    @GetMapping("/user/{userEmail}")
+    public ResponseEntity<UserVideosResponse> getUserVideos(@PathVariable String userEmail) {
+        List<Video> videos = getUserVideosUseCase.execute(userEmail);
+        
+        List<UserVideosResponse.VideoInfo> videoInfos = videos.stream()
+            .map(video -> new UserVideosResponse.VideoInfo(
+                video.getId().toString(),
+                video.getFileName(),
+                video.getStatus().toString(),
+                video.getThumbnailFileName(),
+                video.getThumbnailUrl(),
+                video.getPresignedUrl(),
+                video.getProcessedAt()
+            ))
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(new UserVideosResponse(videoInfos));
     }
 }

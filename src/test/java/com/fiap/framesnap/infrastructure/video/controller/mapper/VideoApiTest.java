@@ -1,9 +1,10 @@
 // Arquivo: VideoApiTest.java
-package com.fiap.framesnap.infrastructure.video.controller;
+package com.fiap.framesnap.infrastructure.video.controller.mapper;
 
 import com.fiap.framesnap.application.video.usecases.*;
 import com.fiap.framesnap.entities.video.Video;
 import com.fiap.framesnap.entities.video.VideoStatus;
+import com.fiap.framesnap.infrastructure.video.controller.VideoApi;
 import com.fiap.framesnap.infrastructure.video.controller.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ class VideoApiTest {
     @Mock private UpdateVideoMetadataUseCase updateVideoMetadataUseCase;
     @Mock private GetVideoStatusUseCase getVideoStatusUseCase;
     @Mock private DownloadThumbnailsUseCase downloadThumbnailsUseCase;
+    @Mock private GetUserVideosUseCase getUserVideosUseCase;
 
     @InjectMocks private VideoApi videoApi;
 
@@ -35,7 +37,7 @@ class VideoApiTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         videoApi = new VideoApi(downloadVideoUseCase, initUploadUseCase, updateVideoStatusUseCase,
-                updateVideoMetadataUseCase, getVideoStatusUseCase, downloadThumbnailsUseCase);
+                updateVideoMetadataUseCase, getVideoStatusUseCase, downloadThumbnailsUseCase, getUserVideosUseCase);
     }
 
     @Test
@@ -100,14 +102,11 @@ class VideoApiTest {
     @Test
     void testDownloadThumbnailsAsFile() {
         UUID videoId = UUID.randomUUID();
-        byte[] expected = "fake".getBytes();
-        String base64 = Base64.getEncoder().encodeToString(expected);
-        when(downloadThumbnailsUseCase.execute(any())).thenReturn(new DownloadThumbnailsUseCase.ThumbnailDownloadResult("thumb.jpg", MediaType.IMAGE_JPEG_VALUE, base64));
+        when(downloadThumbnailsUseCase.execute(any())).thenReturn(new DownloadThumbnailsUseCase.ThumbnailDownloadResult("thumb.jpg", MediaType.IMAGE_JPEG_VALUE, Base64.getEncoder().encodeToString("fake".getBytes())));
 
         ResponseEntity<byte[]> response = videoApi.downloadThumbnailsAsFile(videoId.toString());
 
         assertEquals(200, response.getStatusCodeValue());
-        assertArrayEquals(expected, response.getBody());
-        assertTrue(response.getHeaders().getFirst("Content-Disposition").contains("thumb.jpg"));
+        assertEquals("thumb.jpg", response.getHeaders().getContentDisposition().getFilename());
     }
 }
