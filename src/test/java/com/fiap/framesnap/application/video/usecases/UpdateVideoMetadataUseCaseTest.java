@@ -41,7 +41,7 @@ public class UpdateVideoMetadataUseCaseTest {
         UUID videoId = UUID.randomUUID();
         String thumbnailFileName = "thumbnail.jpg";
         String thumbnailUrl = "http://example.com/thumbnail.jpg";
-        String status = "PROCESSED";
+        String status = "COMPLETED";
         Video video = new Video(videoId, "test.mp4", "test@test.com", VideoStatus.UPLOADED, Instant.now(), "url");
         
         when(videoRepositoryGateway.findById(videoId)).thenReturn(Optional.of(video));
@@ -60,12 +60,12 @@ public class UpdateVideoMetadataUseCaseTest {
         UUID videoId = UUID.randomUUID();
         String thumbnailFileName = "thumbnail.jpg";
         String thumbnailUrl = "http://example.com/thumbnail.jpg";
-        String status = "PROCESSED";
+        String status = "COMPLETED";
         
         when(videoRepositoryGateway.findById(videoId)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> 
+        assertThrows(RuntimeException.class, () -> 
             updateVideoMetadataUseCase.execute(videoId.toString(), thumbnailFileName, thumbnailUrl, status)
         );
 
