@@ -37,11 +37,14 @@ public class VideoRepository implements VideoRepositoryGateway {
 
     @Override
     public List<Video> findByUserEmail(String userEmail) {
-        return videoTable.query(QueryEnhancedRequest.builder()
-                .queryConditional(QueryConditional.keyEqualTo(Key.builder().partitionValue(userEmail).build()))
-                .build())
-                .items()
+        return videoTable
+                .index("userEmail-index")
+                .query(QueryEnhancedRequest.builder()
+                        .queryConditional(QueryConditional.keyEqualTo(Key.builder().partitionValue(userEmail).build()))
+                        .build())
                 .stream()
+                .flatMap(page -> page.items().stream())
                 .collect(Collectors.toList());
     }
+
 }
