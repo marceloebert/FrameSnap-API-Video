@@ -7,6 +7,8 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy;
 import com.fiap.framesnap.infrastructure.video.repository.converter.VideoStatusConverter;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSecondaryPartitionKey;
+
 
 @DynamoDbBean
 public class Video {
@@ -60,6 +62,7 @@ public class Video {
         this.fileName = fileName;
     }
 
+    @DynamoDbSecondaryPartitionKey(indexNames = {"userEmail-index"})
     public String getUserEmail() {
         return userEmail;
     }
